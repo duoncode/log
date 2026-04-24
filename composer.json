@@ -6,10 +6,10 @@
 	"authors": [
 		{
 			"name": "Ernst",
-			"email": "ernst@duon.run"
+			"email": "ernst@duon.sh"
 		}
 	],
-	"homepage": "https://duon.run/log",
+	"homepage": "https://duon.sh/log",
 	"keywords": ["duon", "log", "logging", "psr-3"],
 	"autoload": {
 		"psr-4": {
