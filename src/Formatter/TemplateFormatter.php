@@ -28,19 +28,14 @@ class TemplateFormatter implements Formatter
 	{
 		$substitutes = [];
 
-		/**
-		 * @psalm-suppress MixedAssignment
-		 *
-		 * $value types are exhaustively checked
-		 */
-		foreach ($context as $key => $value) {
+		foreach (array_keys($context) as $key) {
 			$placeholder = '{' . $key . '}';
 
 			if (strpos($template, $placeholder) === false) {
 				continue;
 			}
 
-			$substitutes[$placeholder] = $this->prepare($value, $this->includeTraceback);
+			$substitutes[$placeholder] = $this->prepare($context[$key], $this->includeTraceback);
 		}
 
 		$message = strtr($template, $substitutes);

@@ -28,13 +28,8 @@ class ContextFormatter implements Formatter
 	{
 		$result = '';
 
-		/**
-		 * @psalm-suppress MixedAssignment
-		 *
-		 * $value types are exhaustively checked
-		 */
-		foreach ($context as $key => $value) {
-			$result .= "  [{$key}] => " . $this->prepare($value, $this->includeTraceback, '      ') . "\n";
+		foreach (array_keys($context) as $key) {
+			$result .= "  [{$key}] => " . $this->prepare($context[$key], $this->includeTraceback, '      ') . "\n";
 		}
 
 		return $result;

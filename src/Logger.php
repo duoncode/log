@@ -22,7 +22,7 @@ class Logger implements PsrLogger
 	public const int ALERT = 700;
 	public const int EMERGENCY = 800;
 
-	/** @psalm-var array<int, non-empty-string> */
+	/** @var array<int, non-empty-string> */
 	protected array $levelLabels;
 
 	public function __construct(
