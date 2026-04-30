@@ -50,6 +50,7 @@ trait PreparesValue
 			$trace = $exception->getTraceAsString();
 
 			if ($tracebackIndent) {
+				// Indent each frame: split on '#', rejoin with indent+'#'
 				$trace = implode($tracebackIndent . '#', explode('#', $trace));
 			}
 
