@@ -99,7 +99,7 @@ final class Logger implements PsrLogger
 			return;
 		}
 
-		error_log($line);
+		error_log(str_replace(["\r\n", "\r", "\n"], ' ', $line));
 	}
 
 	/** @return key-of<self::LEVEL_SEVERITY> */

@@ -16,7 +16,7 @@ composer require duon/log
 
 ## Default SAPI logging
 
-Create a logger without arguments to write to PHP's default SAPI error logger.
+Create a logger without arguments to write to PHP's default SAPI error logger. This path writes each record as one physical line, which is friendlier to syslog, journald, containers, and platform log collectors.
 
 ```php
 use Duon\Log\Logger;
@@ -29,7 +29,7 @@ $logger->log(LogLevel::WARNING, 'Disk space is low');
 
 ## File logging
 
-Pass a file path to append log records to that file.
+Pass a file path to append log records to that file. File logging preserves multiline formatter output, including appended context and exception tracebacks.
 
 ```php
 use Duon\Log\Logger;

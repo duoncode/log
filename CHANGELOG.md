@@ -8,6 +8,7 @@
 - Rename the logger constructor destination from `logfile` to `file` and reorder `level` before `formatter`.
 - Replace the old message, template, and context formatters with the default `TextFormatter` and explicit `PlainFormatter`.
 - Use timezone-aware `DATE_ATOM` timestamps in log records.
+- Normalize default SAPI log records to one physical line while preserving multiline explicit file logs.
 - Throw `Psr\Log\InvalidArgumentException` for invalid log levels instead of relying on assertions.
 
 ### Fixed

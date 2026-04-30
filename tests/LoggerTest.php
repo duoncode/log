@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+namespace Duon\Log;
+
+function error_log(string $message, int $messageType = 0, ?string $destination = null): bool
+{
+	return Tests\ErrorLog::write($message, $messageType, $destination);
+}
+
 namespace Duon\Log\Tests;
 
 use Duon\Log\Formatter\PlainFormatter;
@@ -75,19 +82,21 @@ class LoggerTest extends TestCase
 	#[TestDox('Write to PHP SAPI error logger when no file specified')]
 	public function testLoggerToPhpDefaultDestination(): void
 	{
-		// Logger with null file uses error_log() without message_type,
-		// which sends to PHP's SAPI error logger. In CLI, this goes to stderr.
-		// PHPUnit captures stderr, so we cannot verify file output here.
-		// This test confirms Logger works without a file path specified.
+		ErrorLog::clear();
 		$logger = new Logger();
 
-		$logger->debug('Scott');
+		$logger->debug("Scott\nTravis");
 		$logger->info('Steve');
 		$logger->warning('Chuck');
 		$logger->error('Bobby');
 		$logger->alert('Kelly');
 
-		$this->expectNotToPerformAssertions();
+		$messages = ErrorLog::messages();
+
+		$this->assertCount(5, $messages);
+		$this->assertStringContainsString('] DEBUG: Scott Travis', $messages[0]);
+		$this->assertStringNotContainsString("\r", implode('', $messages));
+		$this->assertStringNotContainsString("\n", implode('', $messages));
 	}
 
 	#[TestDox('Respect higher debug level')]
@@ -149,11 +158,13 @@ class LoggerTest extends TestCase
 
 		$logger->emergency('Template {string}', ['string' => 'Formatted']);
 		$logger->info('Template {string}', ['string' => "For\0matted"]);
+		$logger->notice('Context', ['file' => 'products.csv']);
 
 		$output = (string) file_get_contents($this->logFile);
 
 		$this->assertStringContainsString('] EMERGENCY: Template Formatted', $output);
 		$this->assertStringContainsString('] INFO: Template Formatted', $output);
+		$this->assertStringContainsString("] NOTICE: Context:\n  [file] => products.csv", $output);
 		$this->assertStringNotContainsString("\0", $output);
 	}
 
