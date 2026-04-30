@@ -33,15 +33,13 @@ class TemplateFormatter implements Formatter
 		foreach (array_keys($context) as $key) {
 			$placeholder = '{' . $key . '}';
 
-			if (strpos($template, $placeholder) === false) {
+			if (!str_contains($template, $placeholder)) {
 				continue;
 			}
 
 			$substitutes[$placeholder] = $this->prepare($context[$key], $this->includeTraceback);
 		}
 
-		$message = strtr($template, $substitutes);
-
-		return $message;
+		return strtr($template, $substitutes);
 	}
 }

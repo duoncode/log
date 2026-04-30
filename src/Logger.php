@@ -22,6 +22,8 @@ class Logger implements PsrLogger
 	public const int ALERT = 700;
 	public const int EMERGENCY = 800;
 
+	private const int ERROR_LOG_APPEND_TO_FILE = 3;
+
 	/** @var array<int, non-empty-string> */
 	protected array $levelLabels;
 
@@ -66,29 +68,31 @@ class Logger implements PsrLogger
 		array $context = [],
 	): void {
 		$message = (string) $message;
-		assert(is_int($level) || is_numeric($level));
+		assert(is_int($level) || is_numeric($level), 'Log level must be numeric.');
 		$level = (int) $level;
 
 		if ($level < $this->minimumLevel) {
 			return;
 		}
 
-		if (isset($this->levelLabels[$level])) {
-			$levelLabel = $this->levelLabels[$level];
-		} else {
+		$levelLabel = $this->levelLabels[$level] ?? null;
+
+		if ($levelLabel === null) {
 			throw new InvalidArgumentException('Unknown log level: ' . (string) $level);
 		}
 
-		assert(!is_null($this->formatter));
+		assert($this->formatter !== null, 'Logger formatter must be initialized.');
 		$message = $this->formatter->format(str_replace("\0", '', $message), $context);
 		$time = date('Y-m-d H:i:s D T');
 		$line = "[{$time}] {$levelLabel}: {$message}";
 
 		if (is_string($this->logfile)) {
-			error_log($line, 3, $this->logfile);
-		} else {
-			error_log($line);
+			error_log($line, self::ERROR_LOG_APPEND_TO_FILE, $this->logfile);
+
+			return;
 		}
+
+		error_log($line);
 	}
 
 	#[Override]
