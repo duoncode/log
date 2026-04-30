@@ -26,6 +26,7 @@ class TestCase extends BaseTestCase
 
 		$this->logFile = stream_get_meta_data($this->tempFile)['uri'];
 		ini_set('error_log', $this->logFile);
+		ErrorLog::clear();
 
 		$this->defaultErrorReporting = error_reporting();
 		error_reporting(E_ALL);
