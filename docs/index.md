@@ -16,7 +16,7 @@ composer require duon/log
 
 ## Default SAPI logging
 
-Create a logger without arguments to write to PHP's default SAPI error logger. This path writes each record as one physical line, which is friendlier to syslog, journald, containers, and platform log collectors.
+Create a logger without arguments to write to PHP's default SAPI error logger. This path writes each record as one physical line, which is friendlier to syslog, journald, containers, and platform log collectors. Line breaks in formatted messages are replaced with spaces on this path.
 
 ```php
 use Duon\Log\Logger;
@@ -36,6 +36,14 @@ use Duon\Log\Logger;
 
 $logger = new Logger(__DIR__ . '/var/app.log');
 $logger->error('Import failed');
+```
+
+For CLI debugging where you want multiline output on stderr, pass `php://stderr` explicitly.
+
+```php
+use Duon\Log\Logger;
+
+$logger = new Logger('php://stderr');
 ```
 
 ## Level filtering
