@@ -13,7 +13,7 @@ use Psr\Log\LogLevel;
 use Stringable;
 
 /** @api */
-class Logger implements PsrLogger
+final class Logger implements PsrLogger
 {
 	use LoggerTrait;
 
