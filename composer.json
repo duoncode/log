@@ -52,7 +52,6 @@
 			"composer coverage",
 			"composer types",
 			"composer mdlint"
-		],
-		"benchmark": "php bench/run.php"
+		]
 	}
 }
