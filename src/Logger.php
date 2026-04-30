@@ -58,7 +58,7 @@ class Logger implements PsrLogger
 			$this->formatter = new MessageFormatter();
 		}
 
-		$this->minimumLevel = $this->normalizeLevel($minimumLevel);
+		$this->minimumLevel = $this->level($minimumLevel);
 	}
 
 	public function formatter(Formatter $formatter): void
@@ -80,7 +80,7 @@ class Logger implements PsrLogger
 		string|Stringable $message,
 		array $context = [],
 	): void {
-		$level = $this->normalizeLevel($level);
+		$level = $this->level($level);
 
 		if (self::LEVEL_SEVERITY[$level] < self::LEVEL_SEVERITY[$this->minimumLevel]) {
 			return;
@@ -150,19 +150,13 @@ class Logger implements PsrLogger
 	}
 
 	/** @return key-of<self::LEVEL_SEVERITY> */
-	private function normalizeLevel(mixed $level): string
+	private function level(mixed $level): string
 	{
-		return match ($level) {
-			self::DEBUG => self::DEBUG,
-			self::INFO => self::INFO,
-			self::NOTICE => self::NOTICE,
-			self::WARNING => self::WARNING,
-			self::ERROR => self::ERROR,
-			self::CRITICAL => self::CRITICAL,
-			self::ALERT => self::ALERT,
-			self::EMERGENCY => self::EMERGENCY,
-			default => throw new InvalidArgumentException('Unknown log level: ' . $this->printLevel($level)),
-		};
+		if (is_string($level) && array_key_exists($level, self::LEVEL_SEVERITY)) {
+			return $level;
+		}
+
+		throw new InvalidArgumentException('Unknown log level: ' . $this->printLevel($level));
 	}
 
 	private function printLevel(mixed $level): string
