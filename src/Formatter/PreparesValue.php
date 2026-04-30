@@ -17,12 +17,12 @@ trait PreparesValue
 	): string {
 		return match (true) {
 			// Exceptions must be first as they are Stringable
-			is_object($value) && is_subclass_of($value, Throwable::class) => $this->getExceptionMessage(
+			$value instanceof Throwable => $this->getExceptionMessage(
 				$value,
 				$includeTraceback,
 				$tracebackIndent,
 			),
-			is_scalar($value) || is_object($value) && $value instanceof Stringable => (string) $value,
+			is_scalar($value) || $value instanceof Stringable => (string) $value,
 			$value instanceof DateTimeInterface => $value->format('Y-m-d H:i:s T'),
 			is_object($value) => '[Instance of ' . $value::class . ']',
 			is_array($value) => $this->prepareArray($value),
