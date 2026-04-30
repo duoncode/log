@@ -1,9 +1,12 @@
 ---
 title: Introduction
 ---
+
 # Duon Log
 
-Duon Log is a small PSR-3 logger that writes through PHP's `error_log` function. Use it when you need a lightweight logger without Monolog-style handlers.
+Duon Log is a small PSR-3 logger for simple applications and libraries.
+
+It intentionally covers the simple case: PSR-3 messages written through PHP's `error_log` with lightweight text formatting. If you need handlers, channels, processors, log rotation, structured JSON logs, buffering, remote transports, or complex filtering, use [Monolog](https://seldaek.github.io/monolog/) or another full logging library instead.
 
 ## Installation
 
