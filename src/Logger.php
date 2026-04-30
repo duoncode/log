@@ -8,12 +8,15 @@ use Duon\Log\Formatter\TextFormatter;
 use Override;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LoggerInterface as PsrLogger;
+use Psr\Log\LoggerTrait;
 use Psr\Log\LogLevel;
 use Stringable;
 
 /** @api */
 class Logger implements PsrLogger
 {
+	use LoggerTrait;
+
 	public const string DEBUG = LogLevel::DEBUG;
 	public const string INFO = LogLevel::INFO;
 	public const string NOTICE = LogLevel::NOTICE;
@@ -97,54 +100,6 @@ class Logger implements PsrLogger
 		}
 
 		error_log($line);
-	}
-
-	#[Override]
-	public function debug(string|Stringable $message, array $context = []): void
-	{
-		$this->log(self::DEBUG, $message, $context);
-	}
-
-	#[Override]
-	public function info(string|Stringable $message, array $context = []): void
-	{
-		$this->log(self::INFO, $message, $context);
-	}
-
-	#[Override]
-	public function notice(string|Stringable $message, array $context = []): void
-	{
-		$this->log(self::NOTICE, $message, $context);
-	}
-
-	#[Override]
-	public function warning(string|Stringable $message, array $context = []): void
-	{
-		$this->log(self::WARNING, $message, $context);
-	}
-
-	#[Override]
-	public function error(string|Stringable $message, array $context = []): void
-	{
-		$this->log(self::ERROR, $message, $context);
-	}
-
-	#[Override]
-	public function critical(string|Stringable $message, array $context = []): void
-	{
-		$this->log(self::CRITICAL, $message, $context);
-	}
-
-	#[Override]
-	public function alert(string|Stringable $message, array $context = []): void
-	{
-		$this->log(self::ALERT, $message, $context);
-	}
-
-	#[Override]
-	public function emergency(string|Stringable $message, array $context = []): void
-	{
-		$this->log(self::EMERGENCY, $message, $context);
 	}
 
 	/** @return key-of<self::LEVEL_SEVERITY> */

@@ -144,21 +144,11 @@ class LoggerTest extends TestCase
 		$logger = new Logger(file: $this->logFile);
 
 		$logger->emergency('Template {string}', ['string' => 'Formatted']);
-
-		$output = file_get_contents($this->logFile);
-
-		$this->assertStringContainsString('] EMERGENCY: Template Formatted', $output);
-	}
-
-	#[TestDox('Remove null bytes after formatting')]
-	public function testLoggerRemovesNullBytesAfterFormatting(): void
-	{
-		$logger = new Logger(file: $this->logFile);
-
 		$logger->info('Template {string}', ['string' => "For\0matted"]);
 
 		$output = (string) file_get_contents($this->logFile);
 
+		$this->assertStringContainsString('] EMERGENCY: Template Formatted', $output);
 		$this->assertStringContainsString('] INFO: Template Formatted', $output);
 		$this->assertStringNotContainsString("\0", $output);
 	}
