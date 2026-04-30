@@ -94,3 +94,37 @@ $logger = new Logger(formatter: new PlainFormatter());
 $logger->info('User {id} logged in', ['id' => 42]);
 // User {id} logged in
 ```
+
+## Production logging and rotation
+
+Duon Log can be used in production when your logging requirements stay simple. Keep the application responsible for emitting PSR-3 records, and let the runtime or operating system own storage, retention, rotation, and shipping.
+
+Recommended patterns:
+
+- Use `new Logger()` in containers, systemd services, or PHP-FPM setups where stderr, syslog, journald, or the platform log collector handles logs.
+- Use file logging only when the host owns rotation with `logrotate` or an equivalent tool.
+- Use [Monolog](https://seldaek.github.io/monolog/) when the application itself needs rotating handlers, channels, JSON logs, processors, buffering, remote transports, or multiple destinations.
+
+For host-managed file logs, write to the path that your rotation tool manages:
+
+```php
+use Duon\Log\Logger;
+
+$logger = new Logger('/var/log/my-app/app.log');
+```
+
+Example `logrotate` config:
+
+```text
+/var/log/my-app/app.log {
+    daily
+    rotate 14
+    missingok
+    notifempty
+    compress
+    delaycompress
+    create 0640 www-data adm
+}
+```
+
+Adjust the path, owner, group, and retention for your system. The logger appends through `error_log()` for each record and does not keep a file handle open, so external rotation does not require a logger-specific reopen hook.
