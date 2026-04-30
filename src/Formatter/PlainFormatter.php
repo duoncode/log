@@ -7,10 +7,11 @@ namespace Duon\Log\Formatter;
 use Duon\Log\Formatter;
 use Override;
 
-final class MessageFormatter implements Formatter
+/** @api */
+final class PlainFormatter implements Formatter
 {
 	#[Override]
-	public function format(string $message, ?array $context): string
+	public function format(string $message, array $context = []): string
 	{
 		return $message;
 	}

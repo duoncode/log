@@ -53,16 +53,41 @@ Unknown levels throw `Psr\Log\InvalidArgumentException`.
 
 ## Formatters
 
-Use a formatter when you want to interpolate context or append context values.
+A formatter receives the log message and PSR-3 context and returns the text that is written after the timestamp and level.
+
+### TextFormatter
+
+`TextFormatter` is the default. It interpolates matching `{key}` placeholders, appends unused context values, and includes exception tracebacks by default.
 
 ```php
-use Duon\Log\Formatter\ContextFormatter;
-use Duon\Log\Formatter\TemplateFormatter;
+use Duon\Log\Formatter\TextFormatter;
 use Duon\Log\Logger;
 
-$templateLogger = new Logger(formatter: new TemplateFormatter());
-$templateLogger->info('User {id} logged in', ['id' => 42]);
+$logger = new Logger(formatter: new TextFormatter());
 
-$contextLogger = new Logger(formatter: new ContextFormatter());
-$contextLogger->error('Import failed', ['file' => 'products.csv']);
+$logger->info('User {id} logged in', ['id' => 42]);
+// User 42 logged in
+
+$logger->error('Import failed', ['file' => 'products.csv']);
+// Import failed:
+//   [file] => products.csv
+```
+
+Disable exception tracebacks when you only want the exception class and message.
+
+```php
+$logger = new Logger(formatter: new TextFormatter(includeTraceback: false));
+```
+
+### PlainFormatter
+
+`PlainFormatter` returns the message unchanged and ignores context. Use it when you want full control over the message text.
+
+```php
+use Duon\Log\Formatter\PlainFormatter;
+use Duon\Log\Logger;
+
+$logger = new Logger(formatter: new PlainFormatter());
+$logger->info('User {id} logged in', ['id' => 42]);
+// User {id} logged in
 ```

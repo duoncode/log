@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Duon\Log;
 
-use Duon\Log\Formatter\MessageFormatter;
+use Duon\Log\Formatter\TextFormatter;
 use Override;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LoggerInterface as PsrLogger;
@@ -49,15 +49,14 @@ class Logger implements PsrLogger
 		self::EMERGENCY => 'EMERGENCY',
 	];
 
+	protected Formatter $formatter;
+
 	public function __construct(
 		protected ?string $file = null,
 		protected string $level = self::DEBUG,
-		protected ?Formatter $formatter = null,
+		?Formatter $formatter = null,
 	) {
-		if (!$formatter) {
-			$this->formatter = new MessageFormatter();
-		}
-
+		$this->formatter = $formatter ?? new TextFormatter();
 		$this->level = $this->validateLevel($level);
 	}
 
@@ -87,8 +86,7 @@ class Logger implements PsrLogger
 		}
 
 		$message = (string) $message;
-		$formatter = $this->formatter ?? new MessageFormatter();
-		$message = $formatter->format(str_replace("\0", '', $message), $context);
+		$message = $this->formatter->format(str_replace("\0", '', $message), $context);
 		$time = date('Y-m-d H:i:s D T');
 		$line = "[{$time}] " . self::LEVEL_LABELS[$level] . ": {$message}";
 

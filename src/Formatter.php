@@ -6,5 +6,5 @@ namespace Duon\Log;
 
 interface Formatter
 {
-	public function format(string $message, ?array $context): string;
+	public function format(string $message, array $context = []): string;
 }

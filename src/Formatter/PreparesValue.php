@@ -10,8 +10,11 @@ use Throwable;
 
 trait PreparesValue
 {
-	public function prepare(mixed $value, bool $includeTraceback, string $tracebackIndent = ''): string
-	{
+	private function prepare(
+		mixed $value,
+		bool $includeTraceback,
+		string $tracebackIndent = '',
+	): string {
 		return match (true) {
 			// Exceptions must be first as they are Stringable
 			is_object($value) && is_subclass_of($value, Throwable::class) => $this->getExceptionMessage(
@@ -36,7 +39,7 @@ trait PreparesValue
 		return '[Array ' . ($encoded !== false ? $encoded : '...') . ']';
 	}
 
-	protected function getExceptionMessage(
+	private function getExceptionMessage(
 		Throwable $exception,
 		bool $includeTraceback,
 		string $tracebackIndent,

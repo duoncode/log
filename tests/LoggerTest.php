@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Duon\Log\Tests;
 
-use Duon\Log\Formatter\TemplateFormatter;
+use Duon\Log\Formatter\PlainFormatter;
+use Duon\Log\Formatter\TextFormatter;
 use Duon\Log\Logger;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -121,7 +122,7 @@ class LoggerTest extends TestCase
 		$logger->log($level, 'never logged');
 	}
 
-	#[TestDox('Fail with PSR-3 error on unknown minimum log level')]
+	#[TestDox('Fail with PSR-3 error on unknown configured log level')]
 	public function testLoggerWithWrongMinimumLogLevel(): void
 	{
 		$this->throws(InvalidArgumentException::class, 'Unknown log level');
@@ -137,10 +138,10 @@ class LoggerTest extends TestCase
 		yield 'null' => [null];
 	}
 
-	#[TestDox('Format message with TemplateFormatter')]
+	#[TestDox('Format message with default TextFormatter')]
 	public function testFormatMessage(): void
 	{
-		$logger = new Logger(file: $this->logFile, formatter: new TemplateFormatter());
+		$logger = new Logger(file: $this->logFile);
 
 		$logger->emergency('Template {string}', ['string' => 'Formatted']);
 
@@ -152,7 +153,7 @@ class LoggerTest extends TestCase
 	#[TestDox('Format message with different formatters')]
 	public function testFormatMessageAfterSettingFormatter(): void
 	{
-		$logger = new Logger(file: $this->logFile);
+		$logger = new Logger(file: $this->logFile, formatter: new PlainFormatter());
 
 		$logger->alert('Template {string}', ['string' => 'Formatted']);
 
@@ -161,7 +162,7 @@ class LoggerTest extends TestCase
 		$this->assertStringContainsString('] ALERT: Template {string}', $output);
 		$this->assertStringNotContainsString('] ALERT: Template Formatted', $output);
 
-		$logger->formatter(new TemplateFormatter());
+		$logger->formatter(new TextFormatter());
 		$logger->alert('Template {string}', ['string' => 'Formatted']);
 
 		$output = file_get_contents($this->logFile);
@@ -172,7 +173,7 @@ class LoggerTest extends TestCase
 	#[TestDox('Format message with cloned loggers')]
 	public function testFormatMessageAfterCloningLogger(): void
 	{
-		$logger = new Logger(file: $this->logFile);
+		$logger = new Logger(file: $this->logFile, formatter: new PlainFormatter());
 
 		$logger->alert('Template {string}', ['string' => 'Formatted']);
 
@@ -181,7 +182,7 @@ class LoggerTest extends TestCase
 		$this->assertStringContainsString('] ALERT: Template {string}', $output);
 		$this->assertStringNotContainsString('] ALERT: Template Formatted', $output);
 
-		$newLogger = $logger->withFormatter(new TemplateFormatter());
+		$newLogger = $logger->withFormatter(new TextFormatter());
 		$newLogger->alert('New Logger {string}', ['string' => 'Formatted']);
 		$logger->alert('Old Logger {string}', ['string' => 'Formatted']);
 
