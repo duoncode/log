@@ -70,7 +70,7 @@ class LoggerTest extends TestCase
 	#[TestDox('Write to PHP SAPI error logger when no file specified')]
 	public function testLoggerToPhpDefaultDestination(): void
 	{
-		// Logger with null logfile uses error_log() without message_type,
+		// Logger with null file uses error_log() without message_type,
 		// which sends to PHP's SAPI error logger. In CLI, this goes to stderr.
 		// PHPUnit captures stderr, so we cannot verify file output here.
 		// This test confirms Logger works without a file path specified.
@@ -88,7 +88,7 @@ class LoggerTest extends TestCase
 	#[TestDox('Respect higher debug level')]
 	public function testLoggerWithHigherDebugLevel(): void
 	{
-		$logger = new Logger($this->logFile, minimumLevel: LogLevel::ERROR);
+		$logger = new Logger($this->logFile, level: LogLevel::ERROR);
 
 		$logger->debug('Scott');
 		$logger->info('Steve');
@@ -117,7 +117,7 @@ class LoggerTest extends TestCase
 	{
 		$this->throws(InvalidArgumentException::class, 'Unknown log level');
 
-		$logger = new Logger($this->logFile, minimumLevel: LogLevel::ERROR);
+		$logger = new Logger($this->logFile, level: LogLevel::ERROR);
 		$logger->log($level, 'never logged');
 	}
 
@@ -126,7 +126,7 @@ class LoggerTest extends TestCase
 	{
 		$this->throws(InvalidArgumentException::class, 'Unknown log level');
 
-		new Logger($this->logFile, minimumLevel: 'invalid');
+		new Logger($this->logFile, level: 'invalid');
 	}
 
 	/** @return iterable<string, array{mixed}> */
@@ -140,7 +140,7 @@ class LoggerTest extends TestCase
 	#[TestDox('Format message with TemplateFormatter')]
 	public function testFormatMessage(): void
 	{
-		$logger = new Logger(logfile: $this->logFile, formatter: new TemplateFormatter());
+		$logger = new Logger(file: $this->logFile, formatter: new TemplateFormatter());
 
 		$logger->emergency('Template {string}', ['string' => 'Formatted']);
 
@@ -152,7 +152,7 @@ class LoggerTest extends TestCase
 	#[TestDox('Format message with different formatters')]
 	public function testFormatMessageAfterSettingFormatter(): void
 	{
-		$logger = new Logger(logfile: $this->logFile);
+		$logger = new Logger(file: $this->logFile);
 
 		$logger->alert('Template {string}', ['string' => 'Formatted']);
 
@@ -172,7 +172,7 @@ class LoggerTest extends TestCase
 	#[TestDox('Format message with cloned loggers')]
 	public function testFormatMessageAfterCloningLogger(): void
 	{
-		$logger = new Logger(logfile: $this->logFile);
+		$logger = new Logger(file: $this->logFile);
 
 		$logger->alert('Template {string}', ['string' => 'Formatted']);
 

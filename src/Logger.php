@@ -50,15 +50,15 @@ class Logger implements PsrLogger
 	];
 
 	public function __construct(
-		protected ?string $logfile = null,
+		protected ?string $file = null,
+		protected string $level = self::DEBUG,
 		protected ?Formatter $formatter = null,
-		protected string $minimumLevel = self::DEBUG,
 	) {
 		if (!$formatter) {
 			$this->formatter = new MessageFormatter();
 		}
 
-		$this->minimumLevel = $this->level($minimumLevel);
+		$this->level = $this->validateLevel($level);
 	}
 
 	public function formatter(Formatter $formatter): void
@@ -80,9 +80,9 @@ class Logger implements PsrLogger
 		string|Stringable $message,
 		array $context = [],
 	): void {
-		$level = $this->level($level);
+		$level = $this->validateLevel($level);
 
-		if (self::LEVEL_SEVERITY[$level] < self::LEVEL_SEVERITY[$this->minimumLevel]) {
+		if (self::LEVEL_SEVERITY[$level] < self::LEVEL_SEVERITY[$this->level]) {
 			return;
 		}
 
@@ -92,8 +92,8 @@ class Logger implements PsrLogger
 		$time = date('Y-m-d H:i:s D T');
 		$line = "[{$time}] " . self::LEVEL_LABELS[$level] . ": {$message}";
 
-		if (is_string($this->logfile)) {
-			error_log($line . PHP_EOL, self::ERROR_LOG_APPEND_TO_FILE, $this->logfile);
+		if (is_string($this->file)) {
+			error_log($line . PHP_EOL, self::ERROR_LOG_APPEND_TO_FILE, $this->file);
 
 			return;
 		}
@@ -150,7 +150,7 @@ class Logger implements PsrLogger
 	}
 
 	/** @return key-of<self::LEVEL_SEVERITY> */
-	private function level(mixed $level): string
+	private function validateLevel(mixed $level): string
 	{
 		if (is_string($level) && array_key_exists($level, self::LEVEL_SEVERITY)) {
 			return $level;

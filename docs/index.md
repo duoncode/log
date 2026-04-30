@@ -37,13 +37,13 @@ $logger->error('Import failed');
 
 ## Level filtering
 
-Set `minimumLevel` to ignore records below a PSR-3 level.
+Set `level` to ignore records below a PSR-3 level.
 
 ```php
 use Duon\Log\Logger;
 use Psr\Log\LogLevel;
 
-$logger = new Logger(minimumLevel: LogLevel::ERROR);
+$logger = new Logger(level: LogLevel::ERROR);
 
 $logger->warning('Ignored');
 $logger->error('Written');

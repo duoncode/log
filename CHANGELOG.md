@@ -4,7 +4,8 @@
 
 ### Changed
 
-- Use PSR-3 string log levels for logger constants and minimum-level filtering.
+- Use PSR-3 string log levels for logger constants and `level` filtering.
+- Rename the logger constructor destination from `logfile` to `file` and reorder `level` before `formatter`.
 - Throw `Psr\Log\InvalidArgumentException` for invalid log levels instead of relying on assertions.
 
 ### Fixed
