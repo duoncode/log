@@ -53,7 +53,7 @@ trait PreparesValue
 				$trace = implode($tracebackIndent . '#', explode('#', $trace));
 			}
 
-			$message .= "\n" . $trace . "\n";
+			$message .= "\n" . $trace;
 		}
 
 		return $message;

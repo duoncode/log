@@ -57,13 +57,12 @@ final class TextFormatter implements Formatter
 	/** @param array<array-key, mixed> $context */
 	private function transform(array $context): string
 	{
-		$result = '';
+		$lines = [];
 
 		foreach (array_keys($context) as $key) {
-			$result .=
-				"  [{$key}] => " . $this->prepare($context[$key], $this->includeTraceback, '      ') . "\n";
+			$lines[] = "  [{$key}] => " . $this->prepare($context[$key], $this->includeTraceback, '      ');
 		}
 
-		return $result;
+		return implode("\n", $lines);
 	}
 }

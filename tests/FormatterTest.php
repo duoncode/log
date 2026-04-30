@@ -54,6 +54,7 @@ class FormatterTest extends TestCase
 		$this->assertStringContainsString('[exception] => ErrorException: The test exception', $output);
 		$this->assertStringContainsString('#0', $output);
 		$this->assertStringContainsString('FormatterTest->testTextFormatter', $output);
+		$this->assertNotSame("\n", substr($output, -1));
 	}
 
 	#[TestDox('TextFormatter can omit exception tracebacks')]
