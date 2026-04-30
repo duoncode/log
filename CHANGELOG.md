@@ -1,19 +1,30 @@
 # Changelog
 
-## [Unreleased](https://github.com/duoncode/log/compare/0.1.0...HEAD)
+## [Unreleased](https://github.com/duoncode/log/compare/0.2.0...HEAD)
+
+No notable changes since the last release.
+
+## [0.2.0](https://github.com/duoncode/log/releases/tag/0.2.0) (2026-04-30)
+
+### Breaking
+
+- Made `Logger` final.
+- Switched logger constants and level filtering from numeric severities to PSR-3 string levels.
+- Renamed the logger constructor parameters from `logfile` and `minimumLevel` to `file` and `level`, and moved `formatter` after `level`.
+- Removed `MessageFormatter`, `TemplateFormatter`, and `ContextFormatter`; use `PlainFormatter` or `TextFormatter` instead.
+- Changed `Formatter::format()` to accept a default empty array context instead of nullable context.
 
 ### Changed
 
-- Use PSR-3 string log levels for logger constants and `level` filtering.
-- Rename the logger constructor destination from `logfile` to `file` and reorder `level` before `formatter`.
-- Replace the old message, template, and context formatters with the default `TextFormatter` and explicit `PlainFormatter`.
-- Use timezone-aware `DATE_ATOM` timestamps in log records.
-- Normalize default SAPI log records to one physical line while preserving multiline explicit file logs.
-- Throw `Psr\Log\InvalidArgumentException` for invalid log levels instead of relying on assertions.
+- Made `TextFormatter` the default formatter, combining placeholder interpolation with appended unused context.
+- Used timezone-aware `DATE_ATOM` timestamps in log records.
+- Normalized default SAPI log records to one physical line while preserving multiline explicit file logs.
+- Threw `Psr\Log\InvalidArgumentException` for invalid log levels instead of relying on assertions.
 
 ### Fixed
 
-- Append a newline after each explicit file log record.
+- Removed null bytes after formatting so formatter-provided values cannot write null bytes to logs.
+- Appended a newline after each explicit file log record.
 
 ## [0.1.0](https://github.com/duoncode/log/releases/tag/0.1.0) (2026-01-31)
 
