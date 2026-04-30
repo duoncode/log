@@ -12,7 +12,9 @@ class TemplateFormatter implements Formatter
 {
 	use PreparesValue;
 
-	public function __construct(protected readonly bool $includeTraceback = true) {}
+	public function __construct(
+		protected readonly bool $includeTraceback = true,
+	) {}
 
 	#[Override]
 	public function format(string $message, ?array $context): string

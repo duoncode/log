@@ -12,7 +12,9 @@ class ContextFormatter implements Formatter
 {
 	use PreparesValue;
 
-	public function __construct(protected readonly bool $includeTraceback = true) {}
+	public function __construct(
+		protected readonly bool $includeTraceback = true,
+	) {}
 
 	#[Override]
 	public function format(string $message, ?array $context): string
@@ -29,7 +31,8 @@ class ContextFormatter implements Formatter
 		$result = '';
 
 		foreach (array_keys($context) as $key) {
-			$result .= "  [{$key}] => " . $this->prepare($context[$key], $this->includeTraceback, '      ') . "\n";
+			$result .=
+				"  [{$key}] => " . $this->prepare($context[$key], $this->includeTraceback, '      ') . "\n";
 		}
 
 		return $result;

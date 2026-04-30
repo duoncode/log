@@ -19,7 +19,7 @@ trait PreparesValue
 				$includeTraceback,
 				$tracebackIndent,
 			),
-			(is_scalar($value) || (is_object($value) && ($value instanceof Stringable))) => (string) $value,
+			is_scalar($value) || is_object($value) && $value instanceof Stringable => (string) $value,
 			$value instanceof DateTimeInterface => $value->format('Y-m-d H:i:s T'),
 			is_object($value) => '[Instance of ' . $value::class . ']',
 			is_array($value) => $this->prepareArray($value),
