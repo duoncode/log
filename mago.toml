@@ -19,3 +19,9 @@ preserve-breaking-conditional-expression = true
 
 [linter]
 integrations = []
+
+[linter.rules]
+literal-named-argument = { enabled = false }
+no-boolean-flag-parameter = { enabled = false }
+too-many-methods = { exclude = ["src/Logger.php"] }
+no-ini-set = { exclude = ["tests"] }
