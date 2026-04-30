@@ -10,7 +10,7 @@ use Psr\Log\InvalidArgumentException;
 use Psr\Log\LoggerInterface as PsrLogger;
 use Stringable;
 
-/** @psalm-api */
+/** @api */
 class Logger implements PsrLogger
 {
 	public const int DEBUG = 100;

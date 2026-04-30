@@ -28,9 +28,7 @@ trait PreparesValue
 		};
 	}
 
-	/**
-	 * @param array<array-key, mixed> $value
-	 */
+	/** @param array<array-key, mixed> $value */
 	private function prepareArray(array $value): string
 	{
 		$encoded = json_encode($value, JSON_UNESCAPED_SLASHES);

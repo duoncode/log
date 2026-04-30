@@ -7,7 +7,7 @@ namespace Duon\Log\Formatter;
 use Duon\Log\Formatter;
 use Override;
 
-/** @psalm-api */
+/** @api */
 class TemplateFormatter implements Formatter
 {
 	use PreparesValue;
