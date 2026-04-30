@@ -8,44 +8,57 @@ use Duon\Log\Formatter\MessageFormatter;
 use Override;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LoggerInterface as PsrLogger;
+use Psr\Log\LogLevel;
 use Stringable;
 
 /** @api */
 class Logger implements PsrLogger
 {
-	public const int DEBUG = 100;
-	public const int INFO = 200;
-	public const int NOTICE = 300;
-	public const int WARNING = 400;
-	public const int ERROR = 500;
-	public const int CRITICAL = 600;
-	public const int ALERT = 700;
-	public const int EMERGENCY = 800;
+	public const string DEBUG = LogLevel::DEBUG;
+	public const string INFO = LogLevel::INFO;
+	public const string NOTICE = LogLevel::NOTICE;
+	public const string WARNING = LogLevel::WARNING;
+	public const string ERROR = LogLevel::ERROR;
+	public const string CRITICAL = LogLevel::CRITICAL;
+	public const string ALERT = LogLevel::ALERT;
+	public const string EMERGENCY = LogLevel::EMERGENCY;
 
 	private const int ERROR_LOG_APPEND_TO_FILE = 3;
 
-	/** @var array<int, non-empty-string> */
-	protected array $levelLabels;
+	/** @var array<string, positive-int> */
+	private const array LEVEL_SEVERITY = [
+		self::DEBUG => 100,
+		self::INFO => 200,
+		self::NOTICE => 300,
+		self::WARNING => 400,
+		self::ERROR => 500,
+		self::CRITICAL => 600,
+		self::ALERT => 700,
+		self::EMERGENCY => 800,
+	];
+
+	/** @var array<string, non-empty-string> */
+	private const array LEVEL_LABELS = [
+		self::DEBUG => 'DEBUG',
+		self::INFO => 'INFO',
+		self::NOTICE => 'NOTICE',
+		self::WARNING => 'WARNING',
+		self::ERROR => 'ERROR',
+		self::CRITICAL => 'CRITICAL',
+		self::ALERT => 'ALERT',
+		self::EMERGENCY => 'EMERGENCY',
+	];
 
 	public function __construct(
 		protected ?string $logfile = null,
 		protected ?Formatter $formatter = null,
-		protected int $minimumLevel = self::DEBUG,
+		protected string $minimumLevel = self::DEBUG,
 	) {
 		if (!$formatter) {
 			$this->formatter = new MessageFormatter();
 		}
 
-		$this->levelLabels = [
-			self::DEBUG => 'DEBUG',
-			self::INFO => 'INFO',
-			self::NOTICE => 'NOTICE',
-			self::WARNING => 'WARNING',
-			self::ERROR => 'ERROR',
-			self::CRITICAL => 'CRITICAL',
-			self::ALERT => 'ALERT',
-			self::EMERGENCY => 'EMERGENCY',
-		];
+		$this->minimumLevel = $this->normalizeLevel($minimumLevel);
 	}
 
 	public function formatter(Formatter $formatter): void
@@ -67,27 +80,20 @@ class Logger implements PsrLogger
 		string|Stringable $message,
 		array $context = [],
 	): void {
-		$message = (string) $message;
-		assert(is_int($level) || is_numeric($level), 'Log level must be numeric.');
-		$level = (int) $level;
+		$level = $this->normalizeLevel($level);
 
-		if ($level < $this->minimumLevel) {
+		if (self::LEVEL_SEVERITY[$level] < self::LEVEL_SEVERITY[$this->minimumLevel]) {
 			return;
 		}
 
-		$levelLabel = $this->levelLabels[$level] ?? null;
-
-		if ($levelLabel === null) {
-			throw new InvalidArgumentException('Unknown log level: ' . (string) $level);
-		}
-
-		assert($this->formatter !== null, 'Logger formatter must be initialized.');
-		$message = $this->formatter->format(str_replace("\0", '', $message), $context);
+		$message = (string) $message;
+		$formatter = $this->formatter ?? new MessageFormatter();
+		$message = $formatter->format(str_replace("\0", '', $message), $context);
 		$time = date('Y-m-d H:i:s D T');
-		$line = "[{$time}] {$levelLabel}: {$message}";
+		$line = "[{$time}] " . self::LEVEL_LABELS[$level] . ": {$message}";
 
 		if (is_string($this->logfile)) {
-			error_log($line, self::ERROR_LOG_APPEND_TO_FILE, $this->logfile);
+			error_log($line . PHP_EOL, self::ERROR_LOG_APPEND_TO_FILE, $this->logfile);
 
 			return;
 		}
@@ -141,5 +147,30 @@ class Logger implements PsrLogger
 	public function emergency(string|Stringable $message, array $context = []): void
 	{
 		$this->log(self::EMERGENCY, $message, $context);
+	}
+
+	/** @return key-of<self::LEVEL_SEVERITY> */
+	private function normalizeLevel(mixed $level): string
+	{
+		return match ($level) {
+			self::DEBUG => self::DEBUG,
+			self::INFO => self::INFO,
+			self::NOTICE => self::NOTICE,
+			self::WARNING => self::WARNING,
+			self::ERROR => self::ERROR,
+			self::CRITICAL => self::CRITICAL,
+			self::ALERT => self::ALERT,
+			self::EMERGENCY => self::EMERGENCY,
+			default => throw new InvalidArgumentException('Unknown log level: ' . $this->printLevel($level)),
+		};
+	}
+
+	private function printLevel(mixed $level): string
+	{
+		if (is_scalar($level) || $level instanceof Stringable) {
+			return (string) $level;
+		}
+
+		return get_debug_type($level);
 	}
 }

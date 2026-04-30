@@ -6,8 +6,10 @@ namespace Duon\Log\Tests;
 
 use Duon\Log\Formatter\TemplateFormatter;
 use Duon\Log\Logger;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestDox;
 use Psr\Log\InvalidArgumentException;
+use Psr\Log\LogLevel;
 
 class LoggerTest extends TestCase
 {
@@ -26,7 +28,9 @@ class LoggerTest extends TestCase
 		$logger->emergency('Terry');
 
 		$output = file_get_contents($this->logFile);
+		$lines = explode(PHP_EOL, trim((string) $output));
 
+		$this->assertCount(8, $lines);
 		$this->assertStringContainsString('] DEBUG: Scott', $output);
 		$this->assertStringContainsString('] INFO: Steve', $output);
 		$this->assertStringContainsString('] NOTICE: James', $output);
@@ -35,6 +39,32 @@ class LoggerTest extends TestCase
 		$this->assertStringContainsString('] CRITICAL: Chris', $output);
 		$this->assertStringContainsString('] ALERT: Kelly', $output);
 		$this->assertStringContainsString('] EMERGENCY: Terry', $output);
+	}
+
+	#[TestDox('Accept PSR-3 log levels')]
+	public function testLoggerAcceptsPsrLogLevels(): void
+	{
+		$levels = [
+			LogLevel::DEBUG => 'DEBUG',
+			LogLevel::INFO => 'INFO',
+			LogLevel::NOTICE => 'NOTICE',
+			LogLevel::WARNING => 'WARNING',
+			LogLevel::ERROR => 'ERROR',
+			LogLevel::CRITICAL => 'CRITICAL',
+			LogLevel::ALERT => 'ALERT',
+			LogLevel::EMERGENCY => 'EMERGENCY',
+		];
+		$logger = new Logger($this->logFile);
+
+		foreach (array_keys($levels) as $level) {
+			$logger->log($level, $level);
+		}
+
+		$output = file_get_contents($this->logFile);
+
+		foreach ($levels as $level => $label) {
+			$this->assertStringContainsString("] {$label}: {$level}", $output);
+		}
 	}
 
 	#[TestDox('Write to PHP SAPI error logger when no file specified')]
@@ -58,7 +88,7 @@ class LoggerTest extends TestCase
 	#[TestDox('Respect higher debug level')]
 	public function testLoggerWithHigherDebugLevel(): void
 	{
-		$logger = new Logger($this->logFile, minimumLevel: Logger::ERROR);
+		$logger = new Logger($this->logFile, minimumLevel: LogLevel::ERROR);
 
 		$logger->debug('Scott');
 		$logger->info('Steve');
@@ -81,13 +111,30 @@ class LoggerTest extends TestCase
 		$this->assertStringContainsString('] EMERGENCY: Terry', $output);
 	}
 
-	#[TestDox('Fail with PSR-3 error on unknown log level ')]
-	public function testLoggerWithWrongLogLevel(): void
+	#[DataProvider('invalidLevels')]
+	#[TestDox('Fail with PSR-3 error on unknown log level')]
+	public function testLoggerWithWrongLogLevel(mixed $level): void
 	{
 		$this->throws(InvalidArgumentException::class, 'Unknown log level');
 
-		$logger = new Logger($this->logFile, minimumLevel: Logger::ERROR);
-		$logger->log(1313, 'never logged');
+		$logger = new Logger($this->logFile, minimumLevel: LogLevel::ERROR);
+		$logger->log($level, 'never logged');
+	}
+
+	#[TestDox('Fail with PSR-3 error on unknown minimum log level')]
+	public function testLoggerWithWrongMinimumLogLevel(): void
+	{
+		$this->throws(InvalidArgumentException::class, 'Unknown log level');
+
+		new Logger($this->logFile, minimumLevel: 'invalid');
+	}
+
+	/** @return iterable<string, array{mixed}> */
+	public static function invalidLevels(): iterable
+	{
+		yield 'integer' => [1313];
+		yield 'string' => ['invalid'];
+		yield 'null' => [null];
 	}
 
 	#[TestDox('Format message with TemplateFormatter')]
