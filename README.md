@@ -8,6 +8,62 @@
 
 A simple PSR-3 logger using PHP's `error_log` function.
 
+## Installation
+
+```bash
+composer require duon/log
+```
+
+## Usage
+
+Create a logger without arguments to write to PHP's default SAPI error logger.
+
+```php
+use Duon\Log\Logger;
+use Psr\Log\LogLevel;
+
+$logger = new Logger();
+$logger->info('Application started');
+$logger->log(LogLevel::WARNING, 'Disk space is low');
+```
+
+Pass a file path to append log records to that file.
+
+```php
+use Duon\Log\Logger;
+
+$logger = new Logger(__DIR__ . '/var/app.log');
+$logger->error('Import failed');
+```
+
+Set `minimumLevel` to ignore records below a PSR-3 level.
+
+```php
+use Duon\Log\Logger;
+use Psr\Log\LogLevel;
+
+$logger = new Logger(minimumLevel: LogLevel::ERROR);
+
+$logger->warning('Ignored');
+$logger->error('Written');
+```
+
+Use a formatter when you want to interpolate context or append context values.
+
+```php
+use Duon\Log\Formatter\ContextFormatter;
+use Duon\Log\Formatter\TemplateFormatter;
+use Duon\Log\Logger;
+
+$templateLogger = new Logger(formatter: new TemplateFormatter());
+$templateLogger->info('User {id} logged in', ['id' => 42]);
+
+$contextLogger = new Logger(formatter: new ContextFormatter());
+$contextLogger->error('Import failed', ['file' => 'products.csv']);
+```
+
+Unknown levels throw `Psr\Log\InvalidArgumentException`.
+
 ## Testing
 
 During testing, PHP's `error_log` ini setting is set to a temporary file. To print the output to

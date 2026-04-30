@@ -2,7 +2,14 @@
 
 ## [Unreleased](https://github.com/duoncode/log/compare/0.1.0...HEAD)
 
-No notable changes since the last release.
+### Changed
+
+- Use PSR-3 string log levels for logger constants and minimum-level filtering.
+- Throw `Psr\Log\InvalidArgumentException` for invalid log levels instead of relying on assertions.
+
+### Fixed
+
+- Append a newline after each explicit file log record.
 
 ## [0.1.0](https://github.com/duoncode/log/releases/tag/0.1.0) (2026-01-31)
 
@@ -11,5 +18,5 @@ Initial release.
 ### Added
 
 - Simple PSR-3 compatible logger implementation
-- File and stream log handlers
+- SAPI and explicit file logging through PHP's `error_log`
 - Configurable log levels and message formatting
