@@ -90,7 +90,7 @@ final class Logger implements PsrLogger
 
 		$message = $this->formatter->format((string) $message, $context);
 		$message = str_replace("\0", '', $message);
-		$time = date('Y-m-d H:i:s D T');
+		$time = date(DATE_ATOM);
 		$line = "[{$time}] " . self::LEVEL_LABELS[$level] . ": {$message}";
 
 		if (is_string($this->file)) {

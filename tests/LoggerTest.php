@@ -32,6 +32,10 @@ class LoggerTest extends TestCase
 		$lines = explode(PHP_EOL, trim((string) $output));
 
 		$this->assertCount(8, $lines);
+		$this->assertMatchesRegularExpression(
+			'/^\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}\] DEBUG: Scott$/',
+			$lines[0],
+		);
 		$this->assertStringContainsString('] DEBUG: Scott', $output);
 		$this->assertStringContainsString('] INFO: Steve', $output);
 		$this->assertStringContainsString('] NOTICE: James', $output);

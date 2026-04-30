@@ -7,6 +7,7 @@
 - Use PSR-3 string log levels for logger constants and `level` filtering.
 - Rename the logger constructor destination from `logfile` to `file` and reorder `level` before `formatter`.
 - Replace the old message, template, and context formatters with the default `TextFormatter` and explicit `PlainFormatter`.
+- Use timezone-aware `DATE_ATOM` timestamps in log records.
 - Throw `Psr\Log\InvalidArgumentException` for invalid log levels instead of relying on assertions.
 
 ### Fixed
